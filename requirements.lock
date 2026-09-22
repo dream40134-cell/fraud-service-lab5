@@ -15,7 +15,6 @@ fastapi==0.141.1
 fastapi-cli==0.0.32
 fastapi-cloud-cli==0.26.0
 fastar==0.12.0
--e git+https://github.com/dream40134-cell/fraud-service-lab5.git@4fb632a666c9bd14d118e8a6f34ad515f7a4c50d#egg=fraud_service
 grimp==3.17
 h11==0.16.0
 httpcore==1.0.9
@@ -70,6 +69,5 @@ typing_extensions==4.16.0
 urllib3==2.8.0
 uvicorn==0.53.0
 uvloop==0.22.1
--e git+https://github.com/dream40134-cell/wafi.git@afe2a2a21618bb2751d1787702d1fe702072f7b7#egg=wafi
 watchfiles==1.3.0
 websockets==17.1
