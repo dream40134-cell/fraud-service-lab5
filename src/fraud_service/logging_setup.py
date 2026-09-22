@@ -1,5 +1,7 @@
 import logging
 import sys
+from collections.abc import MutableMapping
+from typing import Any
 
 import structlog
 
@@ -7,7 +9,9 @@ SENSITIVE_KEYS = {"password", "token", "secret",
                    "national_id", "card_number"}
 
 
-def _mask_sensitive(logger, method, event_dict):
+def _mask_sensitive(
+    logger: Any, method: str, event_dict: MutableMapping[str, Any]
+) -> MutableMapping[str, Any]:
     for key in list(event_dict):
         if key.lower() in SENSITIVE_KEYS:
             event_dict[key] = "***MASKED***"
