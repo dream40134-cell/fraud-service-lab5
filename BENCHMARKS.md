@@ -64,3 +64,13 @@ _Fill in after Lab 6 Step 3:_
 | p50 latency computed from JSON logs via `jq` | |
 | Fail-fast startup error (bad `FRAUD_MODEL_PATH`) confirmed? | yes / no |
 | `gitleaks` clean on final commit? | yes / no |
+
+## Day 3 — Lab 5 (CI/CD pipeline)
+
+| Metric | Value |
+|---|---|
+| lint job duration | 45-50s |
+| test job duration | 46-57s |
+| image-smoke — cold run | ~2m 14s |
+| image-smoke — warm run (GHA cache) | ~32s |
+| bad-pr: blocked by branch protection? | yes |
