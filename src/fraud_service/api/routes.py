@@ -8,12 +8,14 @@ the trap planted in this lab.
 """
 from typing import Any
 
+import structlog
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from fraud_service.api.schemas import HealthResponse, PredictRequest, PredictResponse
 from fraud_service.service.scorer import FraudScorer
 
 router = APIRouter()
+log = structlog.get_logger()
 
 
 def get_scorer(request: Request) -> FraudScorer:
@@ -28,6 +30,13 @@ def get_scorer(request: Request) -> FraudScorer:
 def predict(body: PredictRequest, request: Request,
             scorer: FraudScorer = Depends(get_scorer)) -> PredictResponse:  # noqa: B008
     result = scorer.score(body.to_domain())
+    log.info(
+        "prediction_served",
+        decision=result["decision"],
+        probability_bucket=round(result["probability"], 1),
+        model_version=result["model_version"],
+    )
+    # ABSENT by design: amount_sar, raw feature values, any customer field
     return PredictResponse(
         transaction_id=result["transaction_id"],
         fraud_probability=round(result["probability"], 6),
