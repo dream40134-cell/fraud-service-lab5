@@ -9,6 +9,7 @@ description = "Raqib Fraud Detection Service (SDA-AIE-113 course project)"
 requires-python = ">=3.10"
 dependencies = [
     "pydantic>=2.8.0",
+    "structlog>=24.0.0",
     "pydantic-settings>=2.4.0",
     "pandas>=2.2.0",
     "scikit-learn>=1.5.0",
@@ -69,3 +70,6 @@ layers = [
     "fraud_service.service",
     "fraud_service.domain",
 ]
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]

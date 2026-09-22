@@ -7,17 +7,22 @@ import uuid
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 
+import structlog
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 
 from fraud_service.adapters.sklearn_model import SklearnModel
 from fraud_service.config import Settings
+from fraud_service.logging_setup import configure_logging
 from fraud_service.service.scorer import FraudScorer
+
+log = structlog.get_logger()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = Settings()
+    configure_logging(settings.log_level)
     t0 = time.perf_counter()
     model = SklearnModel.load(settings.model_path)
     # warm-up: pay lazy-init cost now, not on the first user request
@@ -43,10 +48,15 @@ def create_app() -> FastAPI:
     ) -> Response:
         trace_id = request.headers.get("X-Trace-Id", uuid.uuid4().hex[:16])
         request.state.trace_id = trace_id
+        structlog.contextvars.clear_contextvars()
+        structlog.contextvars.bind_contextvars(
+            trace_id=trace_id, path=request.url.path, method=request.method)
         t0 = time.perf_counter()
         response = await call_next(request)
+        elapsed_ms = round((time.perf_counter() - t0) * 1000, 1)
         response.headers["X-Trace-Id"] = trace_id
-        response.headers["X-Response-Time-Ms"] = str(round((time.perf_counter() - t0) * 1000, 1))
+        response.headers["X-Response-Time-Ms"] = str(elapsed_ms)
+        log.info("http_request", status=response.status_code, latency_ms=elapsed_ms)
         return response
 
     @app.exception_handler(Exception)
