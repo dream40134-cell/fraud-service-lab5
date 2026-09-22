@@ -3,7 +3,7 @@ import pathlib
 
 import pytest
 
-pytestmark = [pytest.mark.behavioural, pytest.mark.slow]
+pytestmark = [pytest.mark.behavioural]
 
 GOLDEN_FILE = pathlib.Path(__file__).parent / "golden_scores.csv"
 
